@@ -1,0 +1,170 @@
+{% extends 'base.html' %}
+
+{% load humanize %}
+
+{% block title %} | Welcome {% endblock %}
+
+{% block content %}
+
+<!-- Showcase -->
+<section id="showcase">
+    <div class="container text-center">
+        <div class="home-search p-5">
+            <div class="overlay p-5">
+                <h1 class="display-4 mb-4">
+                    جستجوی آسان تنها با یک کلیک
+                </h1>
+                <p class="lead">!خانه مورد نظر خود را با انتخاب ویژگی های مد نظرتان تنها با چند کلیک پیدا کنید</p>
+                <div class="search">
+                    <form action="{% url 'search' %}">
+                        <!-- Form Row 1 -->
+                        <div class="form-row">
+                            <div class="col-md-4 mb-3">
+                                <label class="sr-only">جتسجو با نام ویژگی</label>
+                                <input type="text" name="keywords" class="form-control"
+                                    placeholder="نام ویژگی مانند پارکینگ، استخر، و...">
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label class="sr-only">شهر</label>
+                                <input type="text" name="city" class="form-control" placeholder="شهر">
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label class="sr-only">استان</label>
+                                <select name="state" class="form-control">
+                                    <option selected="true" disabled="disabled">استان (همه)</option>
+                                    {% for key,value in state_choices.items %}
+                                    <option value="{{ key }}">{{ value }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <!-- Form Row 2 -->
+                        <div class="form-row">
+                            <div class="col-md-6 mb-3">
+                                <label class="sr-only">تعداد اتاق خواب</label>
+                                <select name="bedrooms" class="form-control">
+                                    <option selected="true" disabled="disabled">تعداد اتاق خواب (همه)</option>
+                                    {% for key,value in bedroom_choices.items %}
+                                    <option value="{{ key }}">{{ value }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <select name="price" class="form-control" id="type">
+                                    <option selected="true" disabled="disabled">حداکثر قیمت (همه)</option>
+                                    {% for key,value in price_choices.items %}
+                                    <option value="{{ key }}">{{ value }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <button class="btn btn-secondary btn-block mt-4" type="submit">جستجو</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Alerts -->
+{% include 'partials/_alerts.html' %}
+
+<!-- Listings -->
+<section id="listings" class="py-5">
+    <div class="container">
+        <h3 class="text-center mb-3">آخرین املاک ثبت شده</h3>
+        <div class="row">
+            <!-- Latest Individual Listings -->
+            {% if listings %}
+            {% for listing in listings %}
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card listing-preview">
+                    <img class="card-img-top" src="{{ listing.photo_main.url }}" alt="">
+                    <div class="card-img-overlay">
+                        <h2>
+                            <span class="badge badge-secondary text-white">${{ listing.price | intcomma }}</span>
+                        </h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="listing-heading text-center">
+                            <h4 class="text-primary">{{ listing.title }}</h4>
+                            <p>
+                                <i class="fas fa-map-marker text-secondary"></i> {{ listing.city }} {{ listing.state }},
+                                {{ listing.zipcode }}
+                            </p>
+                        </div>
+                        <hr>
+                        <div class="row py-2 text-secondary">
+                            <div class="col-6">
+                                <i class="fas fa-th-large"></i> متراژ: {{ listing.sqft }}
+                            </div>
+                            <div class="col-6">
+                                <i class="fas fa-car"></i> پارکینگ: {{ listing.garage}}
+                            </div>
+                        </div>
+                        <div class="row py-2 text-secondary">
+                            <div class="col-6">
+                                <i class="fas fa-bed"></i> اتاق خواب: {{ listing.bedrooms }}
+                            </div>
+                            <div class="col-6">
+                                <i class="fas fa-bath"></i> سرویس بهداشتی: {{ listing.bathrooms }}
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row py-2 text-secondary">
+                            <div class="col-6">
+                                <i class="fas fa-user"></i> {{ listing.realtor }}
+                            </div>
+                        </div>
+                        <div class="row text-secondary pb-2">
+                            <div class="col-6">
+                                <i class="fas fa-clock"></i> {{ listing.list_date | timesince }}
+                            </div>
+                        </div>
+                        <hr>
+                        <a href="{% url 'listing' listing.id %}" class="btn btn-primary btn-block">اطلاعات بیشتر</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            {% else %}
+            <div class="col-md-12">
+                <p>در حال حاضر ملکی وجود ندارد</p>
+            </div>
+            {% endif %}
+
+        </div>
+    </div>
+</section>
+
+<section id="services" class="py-5 bg-secondary text-white">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-md-4">
+                <i class="fas fa-comment fa-4x mr-4"></i>
+                <hr>
+                <h3>خدمات مشاوره</h3>
+                <p>لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گرافیک است چاپگرها و
+                    متون بلکه روزنامه و مجله در ستون و سطرآنچنان که لازم است</p>
+            </div>
+            <div class="col-md-4">
+                <i class="fas fa-home fa-4x mr-4"></i>
+                <hr>
+                <h3>سرمایه گزاری و مشارکت</h3>
+                <p>لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گرافیک است چاپگرها و
+                    متون بلکه روزنامه و مجله در ستون و سطرآنچنان که لازم است</p>
+            </div>
+            <div class="col-md-4">
+                <i class="fas fa-suitcase fa-4x mr-4"></i>
+                <hr>
+                <h3>فروش و اجاره</h3>
+                <p>لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گرافیک است چاپگرها و
+                    متون بلکه روزنامه و مجله در ستون و سطرآنچنان که لازم است</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
